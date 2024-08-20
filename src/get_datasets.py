@@ -5,6 +5,8 @@ from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
 from googleapiclient.discovery import build
 
+#get google sheet dataset
+#which is an example MAPP export from L26
 def authenticate_google():
     """Authenticate & return Google Sheets API service instance"""
     SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
