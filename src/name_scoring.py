@@ -61,7 +61,7 @@ def calculate_name_score(name, dataset_df):
 def compare_against_datasets(df, census_df, ssa_df, local_firstnames_df, local_lastnames_df):
     """
     Compare names in a DataFrame against both national and local datasets,
-    then add scoring and flagging.
+    then add scoring and flagging with nuanced categories.
 
     Parameters:
     - df: DataFrame containing local data with first and last names.
@@ -71,7 +71,7 @@ def compare_against_datasets(df, census_df, ssa_df, local_firstnames_df, local_l
     - local_lastnames_df: DataFrame containing local last name frequencies.
 
     Returns:
-    - df: Original DataFrame with added columns for scores and flags.
+    - df: Original DataFrame with added columns for scores and nuanced flags.
     """
     # Calculate individual scores for national data
     df['national_first_name_score'] = df['first_name'].apply(lambda x: calculate_name_score(x, ssa_df))
@@ -85,7 +85,13 @@ def compare_against_datasets(df, census_df, ssa_df, local_firstnames_df, local_l
     df['combined_score'] = df['national_first_name_score'] + df['national_last_name_score'] + \
                            2 * df['local_first_name_score'] + 2 * df['local_last_name_score']
 
-    threshold = df['combined_score'].quantile(0.80)
-    df['flag'] = df['combined_score'].apply(lambda x: 'Red Flag' if x >= threshold else 'Normal')
+    # Determine thresholds for Red Flag and Yellow Flag
+    red_threshold = df['combined_score'].quantile(0.90)
+    yellow_threshold = df['combined_score'].quantile(0.80)
+    
+    # Apply nuanced flagging based on combined score
+    df['flag'] = df['combined_score'].apply(lambda x: 'Red Flag' if x >= red_threshold else
+                                                      'Yellow Flag' if x >= yellow_threshold else
+                                                      'Low Concern')
     
     return df
