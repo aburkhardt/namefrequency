@@ -11,11 +11,24 @@ def load_national_datasets(census_path, ssa_zip_path, processed_ssa_path='Data_S
     
     return census_df, ssa_df
 
-def process_ssa_zip(ssa_zip_path, processed_ssa_path='Data_Sources/processed_ssa_firstnames.csv'):
+import os
+
+import os
+
+def process_ssa_zip(ssa_zip_path='Data_Sources/ssa_firstnames.zip', processed_ssa_path='Data_Sources/processed_ssa_firstnames.csv'):
     """Process SSA baby names data from ZIP file, filter by years, and group by name."""
     import zipfile
-    import os
     
+    # Resolve paths relative to the project root
+    project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    ssa_zip_path = os.path.join(project_root, ssa_zip_path)
+    processed_ssa_path = os.path.join(project_root, processed_ssa_path)
+
+    # Ensure the directory for the processed file exists
+    processed_dir = os.path.dirname(processed_ssa_path)
+    if not os.path.exists(processed_dir):
+        os.makedirs(processed_dir)
+
     # Check if the processed file already exists
     if os.path.exists(processed_ssa_path):
         return pd.read_csv(processed_ssa_path)
@@ -43,8 +56,15 @@ def process_ssa_zip(ssa_zip_path, processed_ssa_path='Data_Sources/processed_ssa
 
 def load_local_frequencies():
     """Load local first and last name frequencies from CSV files."""
-    firstnames_df = pd.read_csv('Data_Sources/hyperlocal_firstnames.csv')
-    lastnames_df = pd.read_csv('Data_Sources/hyperlocal_lastnames.csv')
+    # Assuming that the bat file is running the script from the project root directory
+    project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    
+    firstnames_path = os.path.join(project_root, 'Data_Sources', 'hyperlocal_firstnames.csv')
+    lastnames_path = os.path.join(project_root, 'Data_Sources', 'hyperlocal_lastnames.csv')
+
+    firstnames_df = pd.read_csv(firstnames_path)
+    lastnames_df = pd.read_csv(lastnames_path)
+    
     return firstnames_df, lastnames_df
 
 def calculate_name_score(name, dataset_df):

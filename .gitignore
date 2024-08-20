@@ -9,6 +9,7 @@ error.log
 notes.txt
 Data_Sources/
 Check_file/
+*.bat
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
